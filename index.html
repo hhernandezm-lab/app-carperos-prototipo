@@ -355,39 +355,122 @@
 
   <script>
     // ====== Datos en memoria (simulación) ======
-    let perfilCarpero = {
-      nombre: "Carpas Don Pepe",
-      categoria: "Carpas",
-      whatsapp: "573001112233",
-      desc: "Alquiler de carpas y sillas frente al mar.",
-      lat: 10.403,
-      lng: -75.550
-    };
+    // ====== Datos REALES CARTAGENA (playas y carperos típicos) ======
+let perfilCarpero = {
+  nombre: "[translate:Carpas Don Chucho]",
+  categoria: "[translate:Carpas]",
+  whatsapp: "573001234567",
+  desc: "[translate:Carpas y sillas en Bocagrande. 4 sillas incluidas. Frente al mar.]",
+  lat: 10.4065,  // Bocagrande - Playa real
+  lng: -75.5632
+};
 
-    let productos = [
-      {
-        id: 1,
-        nombre: "Carpa día completo",
-        tipo: "servicio",
-        precio: 80000,
-        desc: "Carpa con 4 sillas todo el día.",
-        activo: true
-      },
-      {
-        id: 2,
-        nombre: "Agua fría 600ml",
-        tipo: "bien",
-        precio: 4000,
-        desc: "Agua embotellada fría.",
-        activo: true
-      }
-    ];
+let productos = [
+  {
+    id: 1,
+    nombre: "[translate:Carpa full día]",
+    tipo: "servicio",
+    precio: 85000,
+    desc: "[translate:Carpa grande + 4 sillas todo el día. Bocagrande.]",
+    activo: true
+  },
+  {
+    id: 2,
+    nombre: "[translate:Coco fresco]",
+    tipo: "bien",
+    precio: 5000,
+    desc: "[translate:Coco frío recién cortado. $5.000 COP]",
+    activo: true
+  },
+  {
+    id: 3,
+    nombre: "[translate:Agua fría 600ml]",
+    tipo: "bien",
+    precio: 3500,
+    desc: "[translate:Agua embotellada fría del cooler.]",
+    activo: true
+  },
+  {
+    id: 4,
+    nombre: "[translate:Juice natural]",
+    tipo: "bien",
+    precio: 8000,
+    desc: "[translate:Jugo de lulo o guanábana natural.]",
+    activo: true
+  },
+  {
+    id: 5,
+    nombre: "[translate:Masaje 30 min]",
+    tipo: "servicio",
+    precio: 30000,
+    desc: "[translate:Masaje relajante en la playa.]",
+    activo: true
+  }
+];
 
-    let ventas = [];
+let carperosData = [
+  {
+    nombre: "[translate:Carpas Don Chucho]",
+    categoria: "[translate:Carpas]",
+    whatsapp: "573001234567",
+    desc: "[translate:Carpas y sillas en Bocagrande. 4 sillas incluidas. Frente al mar.]",
+    lat: 10.4065,
+    lng: -75.5632,
+    productosDestacados: ["[translate:Carpa full día $85k]", "[translate:Coco fresco $5k]"]
+  },
+  {
+    nombre: "[translate:La Carpa Dorada]",
+    categoria: "[translate:Carpas]",
+    whatsapp: "573009876543",
+    desc: "[translate:Bocagrande. Carpas premium + sombrillas. Zona 2.]",
+    lat: 10.4082,
+    lng: -75.5618,
+    productosDestacados: ["[translate:Carpa premium $100k]", "[translate:Sombrilla $20k]"]
+  },
+  {
+    nombre: "[translate:Jugos Tío Memo]",
+    categoria: "[translate:Comidas]",
+    whatsapp: "573002345678",
+    desc: "[translate:Jugos naturales y patacones. Castillo Grande.]",
+    lat: 10.4240,
+    lng: -75.5495,
+    productosDestacados: ["[translate:Jugo natural $8k]", "[translate:Patacón $12k]"]
+  },
+  {
+    nombre: "[translate:Masajes Marina]",
+    categoria: "[translate:Masajes]",
+    whatsapp: "573004567890",
+    desc: "[translate:Masajes relajantes. Playa Blanca.]",
+    lat: 10.3667,
+    lng: -75.5833,
+    productosDestacados: ["[translate:Masaje 30min $30k]", "[translate:Masaje 1h $50k]"]
+  }
+];
 
-    let nextProductoId = productos.length + 1;
-    let nextVentaId = 1;
+// Ventas de ejemplo del día (hoy)
+let ventas = [
+  {
+    id: 1,
+    productoId: 2,
+    cantidad: 8,
+    precioUnit: 5000,
+    fecha: new Date().toISOString().slice(0, 10),
+    montoTotal: 40000
+  },
+  {
+    id: 2,
+    productoId: 1,
+    cantidad: 2,
+    precioUnit: 85000,
+    fecha: new Date().toISOString().slice(0, 10),
+    montoTotal: 170000
+  }
+];
 
+let nextProductoId = productos.length + 1;
+let nextVentaId = ventas.length + 1;
+
+// ====== Resto del código igual... (copia desde aquí el resto del script anterior) ======
     // ====== Navegación entre vistas principales ======
     function showView(id) {
       document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
