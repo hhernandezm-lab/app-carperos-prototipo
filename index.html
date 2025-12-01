@@ -102,8 +102,8 @@
   .role-card:hover { transform: translateY(-15px) scale(1.05); box-shadow: 0 30px 60px rgba(30,136,229,0.4); }
 
   .role-icon {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
     background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -264,6 +264,14 @@
   /* Iconos en tarjetas de rol */
   .carpero-icon { background-image: linear-gradient(135deg, #ff6b35, #f7931e); }
   .cliente-icon { background-image: linear-gradient(135deg, #4ecdc4, #44a08d); }
+
+  .role-card {
+  height: auto;              /* Deja que crezca según el contenido */
+}
+
+.role-card .card-text {
+  white-space: normal;       /* Permite que el texto haga salto de línea */
+}
 </style>
 
 </head>
@@ -271,44 +279,37 @@
   <div class="container py-4">
     
     <div class="app-header text-center">
-  <h1 class="app-title">🏖️ App Playa</h1>
+  <h1 class="app-title">🏖️ CarpLink</h1>
   <p class="app-subtitle">Formalizando carperos de Cartagena</p>
 </div>
 <div class="beach-wave"></div>
 
     <!-- Pantalla de inicio -->
     <div id="view-home" class="view active">
-      <h1 class="mb-3 text-center">Prototipo App Playa</h1>
+      <h1 class="mb-3 text-center">Prototipo CarpLink</h1>
       <p class="text-center mb-4">
         Elige cómo quieres entrar a la app.
       </p>
       <div class="row justify-content-center">
-        <div class="col-md-4 mb-3">
-          <div
-            class="card role-card"
-            onclick="enterAsCarpero()"
-          >
-            <div class="card-body text-center p-4">
-  <div class="role-icon carpero-icon">🏖️</div>
-  <h3 class="card-title mb-3">Soy carpero</h3>
-  <p class="card-text">Registrar productos, ventas y ver mi panel</p>
-</div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div
-            class="card role-card"
-            onclick="enterAsClient()"
-          >
-            <div class="card-body text-center p-4">
-  <div class="role-icon cliente-icon">🗺️</div>
-  <h3 class="card-title mb-3">Soy cliente</h3>
-  <p class="card-text">Encontrar carperos en el mapa</p>
-</div>
-          </div>
-        </div>
+  <div class="col-md-4 mb-3">
+    <div class="card role-card" onclick="enterAsCarpero()">
+      <div class="card-body text-center p-4">
+        <div class="role-icon">🏖️</div>
+        <h3 class="card-title mb-2">Soy carpero</h3>
+        <p class="card-text mb-0">Registrar productos, ventas y ver mi panel</p>
       </div>
     </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card role-card" onclick="enterAsClient()">
+      <div class="card-body text-center p-4">
+        <div class="role-icon">🗺️</div>
+        <h3 class="card-title mb-2">Soy cliente</h3>
+        <p class="card-text mb-0">Encontrar carperos en el mapa</p>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Portal Carpero -->
     <div id="view-carpero" class="view">
