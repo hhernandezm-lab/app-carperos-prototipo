@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>App Playa – Prototipo</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    body {
+      background-color: #f5f7fa;
+    }
+    .view {
+      display: none;
+    }
+    .view.active {
+      display: block;
+    }
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+    .role-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .role-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+
+    <!-- Pantalla de inicio -->
+    <div id="view-home" class="view active">
+      <h1 class="mb-3 text-center">Prototipo App Playa</h1>
+      <p class="text-center mb-4">
+        Elige cómo quieres entrar a la app.
+      </p>
+      <div class="row justify-content-center">
+        <div class="col-md-4 mb-3">
+          <div
+            class="card role-card"
+            onclick="enterAsCarpero()"
+          >
+            <div class="card-body text-center">
+              <h3 class="card-title">Soy carpero</h3>
+              <p class="card-text">
+                Registrar productos, ventas y ver mi panel.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div
+            class="card role-card"
+            onclick="enterAsClient()"
+          >
+            <div class="card-body text-center">
+              <h3 class="card-title">Soy cliente / turista</h3>
+              <p class="card-text">
+                Ver carperos en el mapa y contactarlos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portal Carpero -->
+    <div id="view-carpero" class="view">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Panel de carpero</h2>
+        <button class="btn btn-outline-secondary btn-sm" onclick="goHome()">Cerrar sesión</button>
+      </div>
+
+      <!-- Navegación interna del portal carpero -->
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+          <button class="nav-link active" id="tab-dashboard" onclick="showCarperoSection('dashboard')">
+            Dashboard
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-productos" onclick="showCarperoSection('productos')">
+            Productos
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-ventas" onclick="showCarperoSection('ventas')">
+            Ventas
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-aprende" onclick="showCarperoSection('aprende')">
+            Aprende
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-perfil" onclick="showCarperoSection('perfil')">
+            Perfil
+          </button>
+        </li>
+      </ul>
+
+      <!-- Sección Dashboard -->
+      <div id="carpero-dashboard" class="carpero-section">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5>Total ventas del día</h5>
+                <p id="total-dia" class="fs-4 fw-bold">$0</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5>Número de ventas</h5>
+                <p id="num-ventas" class="fs-4 fw-bold">0</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5>Productos registrados</h5>
+                <p id="num-productos" class="fs-4 fw-bold">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="mt-4">Ventas recientes</h4>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Monto</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ventas-recientes">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sección Productos -->
+      <div id="carpero-productos" class="carpero-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4>Mis productos y servicios</h4>
+          <button class="btn btn-primary btn-sm" onclick="openProductoForm()">+ Agregar producto</button>
+        </div>
+
+        <!-- Formulario producto -->
+        <form id="form-producto" class="border rounded p-3 mb-3 d-none" onsubmit="guardarProducto(event)">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label class="form-label">Nombre</label>
+              <input type="text" id="prod-nombre" class="form-control" required />
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Tipo</label>
+              <select id="prod-tipo" class="form-select" required>
+                <option value="bien">Bien</option>
+                <option value="servicio">Servicio</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Precio (COP)</label>
+              <input type="number" id="prod-precio" class="form-control" required />
+            </div>
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Activo</label>
+              <select id="prod-activo" class="form-select">
+                <option value="true" selected>Sí</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="col-12 mb-2">
+              <label class="form-label">Descripción</label>
+              <textarea id="prod-desc" class="form-control" rows="2"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelProductoForm()">Cancelar</button>
+        </form>
+
+        <!-- Lista productos -->
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Precio</th>
+              <th>Activo</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-productos">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sección Ventas -->
+      <div id="carpero-ventas" class="carpero-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4>Registrar venta</h4>
+        </div>
+        <form id="form-venta" class="border rounded p-3 mb-3" onsubmit="guardarVenta(event)">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label class="form-label">Producto</label>
+              <select id="venta-producto" class="form-select" required>
+              </select>
+            </div>
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Cantidad</label>
+              <input type="number" id="venta-cantidad" class="form-control" value="1" min="1" required />
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Precio unitario (COP)</label>
+              <input type="number" id="venta-precio" class="form-control" required />
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Fecha</label>
+              <input type="date" id="venta-fecha" class="form-control" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm">Guardar venta</button>
+        </form>
+
+        <h4>Historial de ventas</h4>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Monto</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ventas-historial">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sección Aprende -->
+      <div id="carpero-aprende" class="carpero-section d-none">
+        <h4>Aprende y mejora tu negocio</h4>
+        <p class="text-muted">
+          Aquí en el prototipo mostramos “microcontenidos” fijos. En una versión futura se podría conectar un chatbot de IA.
+        </p>
+        <ul>
+          <li>Registra todas tus ventas del día para saber realmente cuánto estás ganando.</li>
+          <li>Agrupa tus productos en combos (ej. carpa + sillas + bebidas) para aumentar el ticket promedio.</li>
+          <li>Define un horario claro y precios visibles para generar confianza en turistas.</li>
+        </ul>
+      </div>
+
+      <!-- Sección Perfil -->
+      <div id="carpero-perfil" class="carpero-section d-none">
+        <h4>Mi perfil</h4>
+        <p class="text-muted">
+          Estos datos se usarán para mostrarte en el mapa a los clientes.
+        </p>
+        <form id="form-perfil" class="border rounded p-3" onsubmit="guardarPerfil(event)">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label class="form-label">Nombre comercial</label>
+              <input type="text" id="perfil-nombre" class="form-control" required />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label">Categoría principal</label>
+              <select id="perfil-categoria" class="form-select" required>
+                <option value="Carpas">Carpas y sillas</option>
+                <option value="Comidas">Comidas y bebidas</option>
+                <option value="Masajes">Masajes</option>
+                <option value="Tours">Tours y paseos</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label">WhatsApp (solo números)</label>
+              <input type="text" id="perfil-whatsapp" class="form-control" placeholder="57XXXXXXXXXX" />
+            </div>
+            <div class="col-12 mb-2">
+              <label class="form-label">Descripción corta</label>
+              <textarea id="perfil-desc" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Latitud (aprox.)</label>
+              <input type="number" step="0.000001" id="perfil-lat" class="form-control" placeholder="10.4..." />
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Longitud (aprox.)</label>
+              <input type="number" step="0.000001" id="perfil-lng" class="form-control" placeholder="-75.5..." />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm">Guardar perfil</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Portal Cliente / Turista -->
+    <div id="view-cliente" class="view">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Explorar carperos en la playa</h2>
+        <button class="btn btn-outline-secondary btn-sm" onclick="goHome()">Volver al inicio</button>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Filtrar por categoría</label>
+          <select id="filtro-categoria" class="form-select" onchange="renderMapa()">
+            <option value="Todos">Todos</option>
+            <option value="Carpas">Carpas y sillas</option>
+            <option value="Comidas">Comidas y bebidas</option>
+            <option value="Masajes">Masajes</option>
+            <option value="Tours">Tours y paseos</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="map" class="mb-3"></div>
+
+      <h4>Lista de carperos</h4>
+      <ul id="lista-carperos" class="list-group"></ul>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // ====== Datos en memoria (simulación) ======
+    let perfilCarpero = {
+      nombre: "Carpas Don Pepe",
+      categoria: "Carpas",
+      whatsapp: "573001112233",
+      desc: "Alquiler de carpas y sillas frente al mar.",
+      lat: 10.403,
+      lng: -75.550
+    };
+
+    let productos = [
+      {
+        id: 1,
+        nombre: "Carpa día completo",
+        tipo: "servicio",
+        precio: 80000,
+        desc: "Carpa con 4 sillas todo el día.",
+        activo: true
+      },
+      {
+        id: 2,
+        nombre: "Agua fría 600ml",
+        tipo: "bien",
+        precio: 4000,
+        desc: "Agua embotellada fría.",
+        activo: true
+      }
+    ];
+
+    let ventas = [];
+
+    let nextProductoId = productos.length + 1;
+    let nextVentaId = 1;
+
+    // ====== Navegación entre vistas principales ======
+    function showView(id) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function goHome() {
+      showView("view-home");
+    }
+
+    function enterAsCarpero() {
+      showView("view-carpero");
+      updateCarperoUI();
+    }
+
+    function enterAsClient() {
+      showView("view-cliente");
+      initMap();
+    }
+
+    // ====== Navegación secciones carpero ======
+    function showCarperoSection(section) {
+      document.querySelectorAll(".carpero-section").forEach(s => s.classList.add("d-none"));
+      document.getElementById("carpero-" + section).classList.remove("d-none");
+
+      document.querySelectorAll("#view-carpero .nav-link").forEach(btn => btn.classList.remove("active"));
+      document.getElementById("tab-" + section).classList.add("active");
+    }
+
+    // ====== Productos ======
+    function openProductoForm() {
+      document.getElementById("form-producto").classList.remove("d-none");
+    }
+
+    function cancelProductoForm() {
+      document.getElementById("form-producto").reset();
+      document.getElementById("form-producto").classList.add("d-none");
+    }
+
+    function guardarProducto(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("prod-nombre").value;
+      const tipo = document.getElementById("prod-tipo").value;
+      const precio = parseFloat(document.getElementById("prod-precio").value || "0");
+      const desc = document.getElementById("prod-desc").value;
+      const activo = document.getElementById("prod-activo").value === "true";
+
+      productos.push({
+        id: nextProductoId++,
+        nombre,
+        tipo,
+        precio,
+        desc,
+        activo
+      });
+
+      cancelProductoForm();
+      renderProductos();
+      fillProductosEnVentas();
+      updateCarperoUI();
+    }
+
+    function renderProductos() {
+      const tbody = document.getElementById("tabla-productos");
+      tbody.innerHTML = "";
+      productos.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.nombre}</td>
+          <td>${p.tipo}</td>
+          <td>$${p.precio.toLocaleString("es-CO")}</td>
+          <td>${p.activo ? "Sí" : "No"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ====== Ventas ======
+    function fillProductosEnVentas() {
+      const sel = document.getElementById("venta-producto");
+      sel.innerHTML = "";
+      productos
+        .filter(p => p.activo)
+        .forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.nombre;
+          sel.appendChild(opt);
+        });
+    }
+
+    function guardarVenta(e) {
+      e.preventDefault();
+      const productoId = parseInt(document.getElementById("venta-producto").value);
+      const cantidad = parseInt(document.getElementById("venta-cantidad").value || "1");
+      const precioUnit = parseFloat(document.getElementById("venta-precio").value || "0");
+      const fecha = document.getElementById("venta-fecha").value;
+
+      const montoTotal = cantidad * precioUnit;
+
+      ventas.push({
+        id: nextVentaId++,
+        productoId,
+        cantidad,
+        precioUnit,
+        fecha,
+        montoTotal
+      });
+
+      document.getElementById("form-venta").reset();
+      fillProductosEnVentas();
+      renderVentas();
+      updateCarperoUI();
+    }
+
+    function renderVentas() {
+      const tbodyHist = document.getElementById("tabla-ventas-historial");
+      const tbodyRec = document.getElementById("tabla-ventas-recientes");
+      tbodyHist.innerHTML = "";
+      tbodyRec.innerHTML = "";
+
+      ventas.forEach(v => {
+        const prod = productos.find(p => p.id === v.productoId);
+        const nombreProd = prod ? prod.nombre : "Producto";
+
+        const trHist = document.createElement("tr");
+        trHist.innerHTML = `
+          <td>${nombreProd}</td>
+          <td>${v.cantidad}</td>
+          <td>$${v.montoTotal.toLocaleString("es-CO")}</td>
+          <td>${v.fecha}</td>
+        `;
+        tbodyHist.appendChild(trHist);
+      });
+
+      const recientes = ventas.slice(-5).reverse();
+      recientes.forEach(v => {
+        const prod = productos.find(p => p.id === v.productoId);
+        const nombreProd = prod ? prod.nombre : "Producto";
+
+        const trRec = document.createElement("tr");
+        trRec.innerHTML = `
+          <td>${nombreProd}</td>
+          <td>${v.cantidad}</td>
+          <td>$${v.montoTotal.toLocaleString("es-CO")}</td>
+          <td>${v.fecha}</td>
+        `;
+        tbodyRec.appendChild(trRec);
+      });
+    }
+
+    // ====== Perfil ======
+    function guardarPerfil(e) {
+      e.preventDefault();
+      perfilCarpero.nombre = document.getElementById("perfil-nombre").value;
+      perfilCarpero.categoria = document.getElementById("perfil-categoria").value;
+      perfilCarpero.whatsapp = document.getElementById("perfil-whatsapp").value;
+      perfilCarpero.desc = document.getElementById("perfil-desc").value;
+      perfilCarpero.lat = parseFloat(document.getElementById("perfil-lat").value || perfilCarpero.lat);
+      perfilCarpero.lng = parseFloat(document.getElementById("perfil-lng").value || perfilCarpero.lng);
+
+      alert("Perfil guardado (prototipo). Ahora se reflejará en el mapa del cliente.");
+    }
+
+    function cargarPerfilEnFormulario() {
+      document.getElementById("perfil-nombre").value = perfilCarpero.nombre || "";
+      document.getElementById("perfil-categoria").value = perfilCarpero.categoria || "Carpas";
+      document.getElementById("perfil-whatsapp").value = perfilCarpero.whatsapp || "";
+      document.getElementById("perfil-desc").value = perfilCarpero.desc || "";
+      document.getElementById("perfil-lat").value = perfilCarpero.lat || "";
+      document.getElementById("perfil-lng").value = perfilCarpero.lng || "";
+    }
+
+    // ====== Dashboard carpero ======
+    function updateCarperoUI() {
+      // Totales simples del día (usando fecha de hoy)
+      const hoy = new Date().toISOString().slice(0, 10);
+      const ventasHoy = ventas.filter(v => v.fecha === hoy);
+      const totalDia = ventasHoy.reduce((acc, v) => acc + v.montoTotal, 0);
+
+      document.getElementById("total-dia").textContent = "$" + totalDia.toLocaleString("es-CO");
+      document.getElementById("num-ventas").textContent = ventasHoy.length.toString();
+      document.getElementById("num-productos").textContent = productos.length.toString();
+
+      renderProductos();
+      fillProductosEnVentas();
+      renderVentas();
+      cargarPerfilEnFormulario();
+    }
+
+    // ====== Mapa Leaflet (vista cliente) ======
+    let map;
+    let markersLayer;
+
+    function initMap() {
+      if (!map) {
+        map = L.map("map").setView([perfilCarpero.lat, perfilCarpero.lng], 14);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+      }
+      renderMapa();
+    }
+
+    function renderMapa() {
+      if (!map || !markersLayer) return;
+
+      markersLayer.clearLayers();
+      const categoriaFiltro = document.getElementById("filtro-categoria").value;
+
+      // Por ahora sólo tenemos un carpero (perfilCarpero) en el prototipo.
+      const carperos = [perfilCarpero];
+
+      const lista = document.getElementById("lista-carperos");
+      lista.innerHTML = "";
+
+      carperos.forEach(c => {
+        if (!c.lat || !c.lng) return;
+        if (categoriaFiltro !== "Todos" && c.categoria !== categoriaFiltro) return;
+
+        const marker = L.marker([c.lat, c.lng]).addTo(markersLayer);
+        const popupHtml = `
+          <strong>${c.nombre}</strong><br/>
+          Categoría: ${c.categoria}<br/>
+          ${c.desc || ""}<br/>
+          <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank">Contactar por WhatsApp</a>
+        `;
+        marker.bindPopup(popupHtml);
+
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.innerHTML = `
+          <strong>${c.nombre}</strong> – ${c.categoria}<br/>
+          <small>${c.desc || ""}</small><br/>
+          <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank">Contactar por WhatsApp</a>
+        `;
+        lista.appendChild(li);
+      });
+
+      if (carperos.length > 0 && carperos[0].lat && carperos[0].lng) {
+        map.setView([carperos[0].lat, carperos[0].lng], 14);
+      }
+    }
+
+    function buildWhatsAppLink(number) {
+      if (!number) return "#";
+      // Formato click-to-chat de WhatsApp
+      return "https://wa.me/" + number;
+    }
+
+    // ====== Inicializar ======
+    document.addEventListener("DOMContentLoaded", () => {
+      updateCarperoUI();
+    });
+  </script>
+</body>
+</html>
