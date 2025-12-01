@@ -584,58 +584,59 @@ let nextVentaId = 3;
     let markersLayer;
 
     function initMap() {
-      if (!map) {
-        map = L.map("map").setView([perfilCarpero.lat, perfilCarpero.lng], 14);
+  if (!map) {
+    map = L.map("map").setView([10.4100, -75.5700], 13);  // ✅ Centro Cartagena
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-        markersLayer = L.layerGroup().addTo(map);
-      }
-      renderMapa();
-    }
+    markersLayer = L.layerGroup().addTo(map);
+  }
+  renderMapa();  // ✅ Cargar todos los carperos
+}
 
     function renderMapa() {
-      if (!map || !markersLayer) return;
+  if (!map || !markersLayer) return;
 
-      markersLayer.clearLayers();
-      const categoriaFiltro = document.getElementById("filtro-categoria").value;
+  markersLayer.clearLayers();
+  const categoriaFiltro = document.getElementById("filtro-categoria").value;
 
-      // Por ahora sólo tenemos un carpero (perfilCarpero) en el prototipo.
-      const carperos = [perfilCarpero];
+  const lista = document.getElementById("lista-carperos");
+  lista.innerHTML = "";
 
-      const lista = document.getElementById("lista-carperos");
-      lista.innerHTML = "";
+  // ✅ MOSTRAR TODOS los carperos de carperosData
+  carperosData.forEach(c => {
+    if (!c.lat || !c.lng) return;
+    if (categoriaFiltro !== "Todos" && c.categoria !== categoriaFiltro) return;
 
-      carperos.forEach(c => {
-        if (!c.lat || !c.lng) return;
-        if (categoriaFiltro !== "Todos" && c.categoria !== categoriaFiltro) return;
+    const marker = L.marker([c.lat, c.lng]).addTo(markersLayer);
+    const popupHtml = `
+      <strong>${c.nombre}</strong><br/>
+      ${c.categoria}<br/>
+      ${c.desc}<br/>
+      <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank" class="btn btn-success btn-sm">WhatsApp</a>
+    `;
+    marker.bindPopup(popupHtml);
 
-        const marker = L.marker([c.lat, c.lng]).addTo(markersLayer);
-        const popupHtml = `
+    const li = document.createElement("li");
+    li.className = "list-group-item";
+    li.innerHTML = `
+      <div class="d-flex justify-content-between">
+        <div>
           <strong>${c.nombre}</strong><br/>
-          Categoría: ${c.categoria}<br/>
-          ${c.desc || ""}<br/>
-          <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank">Contactar por WhatsApp</a>
-        `;
-        marker.bindPopup(popupHtml);
+          <small>${c.categoria} • ${c.desc}</small>
+        </div>
+        <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank" class="btn btn-success btn-sm">Contactar</a>
+      </div>
+    `;
+    lista.appendChild(li);
+  });
 
-        const li = document.createElement("li");
-        li.className = "list-group-item";
-        li.innerHTML = `
-          <strong>${c.nombre}</strong> – ${c.categoria}<br/>
-          <small>${c.desc || ""}</small><br/>
-          <a href="${buildWhatsAppLink(c.whatsapp)}" target="_blank">Contactar por WhatsApp</a>
-        `;
-        lista.appendChild(li);
-      });
-
-      if (carperos.length > 0 && carperos[0].lat && carperos[0].lng) {
-        map.setView([carperos[0].lat, carperos[0].lng], 14);
-      }
-    }
+  // Centrar mapa en Cartagena
+  map.setView([10.4100, -75.5700], 13);
+}
 
     function buildWhatsAppLink(number) {
       if (!number) return "#";
