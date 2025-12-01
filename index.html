@@ -354,121 +354,39 @@
   ></script>
 
   <script>
-    // ====== Datos en memoria (simulación) ======
     // ====== Datos REALES CARTAGENA (playas y carperos típicos) ======
+// ====== Datos REALES CARTAGENA ======
 let perfilCarpero = {
-  nombre: "[translate:Carpas Don Chucho]",
-  categoria: "[translate:Carpas]",
+  nombre: "Carpas Don Chucho",
+  categoria: "Carpas",
   whatsapp: "573001234567",
-  desc: "[translate:Carpas y sillas en Bocagrande. 4 sillas incluidas. Frente al mar.]",
-  lat: 10.4065,  // Bocagrande - Playa real
+  desc: "Carpas y sillas en Bocagrande. 4 sillas incluidas. Frente al mar.",
+  lat: 10.4065,
   lng: -75.5632
 };
 
 let productos = [
-  {
-    id: 1,
-    nombre: "[translate:Carpa full día]",
-    tipo: "servicio",
-    precio: 85000,
-    desc: "[translate:Carpa grande + 4 sillas todo el día. Bocagrande.]",
-    activo: true
-  },
-  {
-    id: 2,
-    nombre: "[translate:Coco fresco]",
-    tipo: "bien",
-    precio: 5000,
-    desc: "[translate:Coco frío recién cortado. $5.000 COP]",
-    activo: true
-  },
-  {
-    id: 3,
-    nombre: "[translate:Agua fría 600ml]",
-    tipo: "bien",
-    precio: 3500,
-    desc: "[translate:Agua embotellada fría del cooler.]",
-    activo: true
-  },
-  {
-    id: 4,
-    nombre: "[translate:Juice natural]",
-    tipo: "bien",
-    precio: 8000,
-    desc: "[translate:Jugo de lulo o guanábana natural.]",
-    activo: true
-  },
-  {
-    id: 5,
-    nombre: "[translate:Masaje 30 min]",
-    tipo: "servicio",
-    precio: 30000,
-    desc: "[translate:Masaje relajante en la playa.]",
-    activo: true
-  }
+  {id: 1, nombre: "Carpa full día", tipo: "servicio", precio: 85000, desc: "Carpa grande + 4 sillas todo el día.", activo: true},
+  {id: 2, nombre: "Coco fresco", tipo: "bien", precio: 5000, desc: "Coco frío recién cortado.", activo: true},
+  {id: 3, nombre: "Agua fría 600ml", tipo: "bien", precio: 3500, desc: "Agua embotellada fría.", activo: true},
+  {id: 4, nombre: "Jugo natural", tipo: "bien", precio: 8000, desc: "Jugo de lulo o guanábana.", activo: true},
+  {id: 5, nombre: "Masaje 30 min", tipo: "servicio", precio: 30000, desc: "Masaje relajante en la playa.", activo: true}
 ];
 
 let carperosData = [
-  {
-    nombre: "[translate:Carpas Don Chucho]",
-    categoria: "[translate:Carpas]",
-    whatsapp: "573001234567",
-    desc: "[translate:Carpas y sillas en Bocagrande. 4 sillas incluidas. Frente al mar.]",
-    lat: 10.4065,
-    lng: -75.5632,
-    productosDestacados: ["[translate:Carpa full día $85k]", "[translate:Coco fresco $5k]"]
-  },
-  {
-    nombre: "[translate:La Carpa Dorada]",
-    categoria: "[translate:Carpas]",
-    whatsapp: "573009876543",
-    desc: "[translate:Bocagrande. Carpas premium + sombrillas. Zona 2.]",
-    lat: 10.4082,
-    lng: -75.5618,
-    productosDestacados: ["[translate:Carpa premium $100k]", "[translate:Sombrilla $20k]"]
-  },
-  {
-    nombre: "[translate:Jugos Tío Memo]",
-    categoria: "[translate:Comidas]",
-    whatsapp: "573002345678",
-    desc: "[translate:Jugos naturales y patacones. Castillo Grande.]",
-    lat: 10.4240,
-    lng: -75.5495,
-    productosDestacados: ["[translate:Jugo natural $8k]", "[translate:Patacón $12k]"]
-  },
-  {
-    nombre: "[translate:Masajes Marina]",
-    categoria: "[translate:Masajes]",
-    whatsapp: "573004567890",
-    desc: "[translate:Masajes relajantes. Playa Blanca.]",
-    lat: 10.3667,
-    lng: -75.5833,
-    productosDestacados: ["[translate:Masaje 30min $30k]", "[translate:Masaje 1h $50k]"]
-  }
+  {nombre: "Carpas Don Chucho", categoria: "Carpas", whatsapp: "573001234567", desc: "Carpas Bocagrande. 4 sillas incluidas.", lat: 10.4065, lng: -75.5632},
+  {nombre: "La Carpa Dorada", categoria: "Carpas", whatsapp: "573009876543", desc: "Carpas premium Bocagrande.", lat: 10.4082, lng: -75.5618},
+  {nombre: "Jugos Tío Memo", categoria: "Comidas", whatsapp: "573002345678", desc: "Jugos y patacones Castillo Grande.", lat: 10.4240, lng: -75.5495},
+  {nombre: "Masajes Marina", categoria: "Masajes", whatsapp: "573004567890", desc: "Masajes Playa Blanca.", lat: 10.3667, lng: -75.5833}
 ];
 
-// Ventas de ejemplo del día (hoy)
 let ventas = [
-  {
-    id: 1,
-    productoId: 2,
-    cantidad: 8,
-    precioUnit: 5000,
-    fecha: new Date().toISOString().slice(0, 10),
-    montoTotal: 40000
-  },
-  {
-    id: 2,
-    productoId: 1,
-    cantidad: 2,
-    precioUnit: 85000,
-    fecha: new Date().toISOString().slice(0, 10),
-    montoTotal: 170000
-  }
+  {id: 1, productoId: 2, cantidad: 8, precioUnit: 5000, fecha: new Date().toISOString().slice(0, 10), montoTotal: 40000},
+  {id: 2, productoId: 1, cantidad: 2, precioUnit: 85000, fecha: new Date().toISOString().slice(0, 10), montoTotal: 170000}
 ];
 
-let nextProductoId = productos.length + 1;
-let nextVentaId = ventas.length + 1;
+let nextProductoId = 6;
+let nextVentaId = 3;
 
 // ====== Resto del código igual... (copia desde aquí el resto del script anterior) ======
     // ====== Navegación entre vistas principales ======
