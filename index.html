@@ -474,6 +474,14 @@
           </div>
           <button type="submit" class="btn btn-success btn-sm">Guardar venta</button>
         </form>
+        
+        <div id="comprobante-box" class="alert alert-light border rounded-3 mt-3 d-none">
+  <h5 class="mb-2">Comprobante de la última venta</h5>
+  <pre id="comprobante-texto" class="mb-2" style="white-space: pre-wrap;"></pre>
+  <button type="button" class="btn btn-success btn-sm" onclick="copiarComprobante()">
+    Copiar texto para WhatsApp
+  </button>
+</div>
 
         <h4>Historial de ventas</h4>
         <table class="table table-sm">
@@ -622,8 +630,16 @@ let ventas = [
 let nextProductoId = 6;
 let nextVentaId = 3;
 
-// ====== Resto del código igual... (copia desde aquí el resto del script anterior) ======
     // ====== Navegación entre vistas principales ======
+    function formatCOP(valor) {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0
+      }).format(valor);
+    }
+
+    
     function showView(id) {
       document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -735,7 +751,36 @@ let nextVentaId = 3;
       document.getElementById("form-venta").reset();
       fillProductosEnVentas();
       renderVentas();
+      generarComprobante(v);
       updateCarperoUI();
+    }
+    
+    function generarComprobante(venta) {
+      const prod = productos.find(p => p.id === venta.productoId);
+      const nombreProd = prod ? prod.nombre : "Producto";
+      const fecha = venta.fecha;
+      const texto =
+        "Comprobante de venta - App Playa\n" +
+        "--------------------------------\n" +
+        "Producto: " + nombreProd + "\n" +
+        "Cantidad: " + venta.cantidad + "\n" +
+        "Precio unitario: " + formatCOP(venta.precioUnit) + "\n" +
+        "Total: " + formatCOP(venta.montoTotal) + "\n" +
+        "Fecha: " + fecha + "\n\n" +
+        "¡Gracias por tu compra!";
+      
+      const box = document.getElementById("comprobante-box");
+      const pre = document.getElementById("comprobante-texto");
+      pre.textContent = texto;
+      box.classList.remove("d-none");
+    }
+
+    function copiarComprobante() {
+      const texto = document.getElementById("comprobante-texto").textContent;
+      if (!texto) return;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Comprobante copiado. Pégalo en WhatsApp para enviarlo al cliente.");
+      });
     }
 
     function renderVentas() {
