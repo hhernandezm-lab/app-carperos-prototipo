@@ -751,8 +751,13 @@ let nextVentaId = 3;
       document.getElementById("form-venta").reset();
       fillProductosEnVentas();
       renderVentas();
-      generarComprobante(v);
-      updateCarperoUI();
+      generarComprobante({
+        productoId,
+        cantidad,
+        precioUnit,
+        fecha,
+        montoTotal
+  });      updateCarperoUI();
     }
     
     function generarComprobante(venta) {
