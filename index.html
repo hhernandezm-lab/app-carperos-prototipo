@@ -943,7 +943,11 @@ let nextVentaId = 3;
     document.addEventListener("DOMContentLoaded", () => {
       updateCarperoUI();
       const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
+      if (loader) {
+        setTimeout(() => {
+          loader.style.display = "none";
+        }, 2000); // 2000 ms = 2 segundos
+      }
     });
   </script>
 </body>
