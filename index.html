@@ -29,12 +29,11 @@
   * { box-sizing: border-box; }
 
   body {
-  background: linear-gradient(135deg, #e1f5fe 0%, #e0f2f1 50%, #f5e8c7 100%);
-  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=60");
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
-}
+    background: linear-gradient(135deg, var(--ocean) 0%, #e0f2f1 50%, var(--sand) 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
 
   .app-header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
